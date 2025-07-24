@@ -3,21 +3,32 @@ canteen_menu = {}
 orders = {}
 
 def admin_panel():
-    print("Welcome Admin......!\n")
-    while True:
-        print("1. Update Menu")
-        print("2. View Orders")
-        print("3. Exit Owner Panel")
-        choice = input("Enter choice: ")
+    print("-------Welcome to admin portal------")
+    print()
+    username = input("Enter Your Username: ")
+    username = username.lower()
+    password =input("Enter Your Password: ")
+    if (username=="admin" and password == "admin123"):
+        print("Welcome Admin......!\n")
+        while True:
+            print("\n1. Add Menu")
+            print("\n2. View Orders")
+            print("\n3. Delete Menu")
+            print("\n4. Exit Owner Panel")
+            choice = input("Enter choice: ")
 
-        if choice == '1':
-            add_menu_item()
-        elif choice == '2':
-            view_all_orders()
-        elif choice == '3':
-            break
-        else:
-            print("The choice is not valid. Try again.")
+            if choice == '1':
+                add_menu_item()
+            elif choice == '2':
+                view_all_orders()
+            elif choice=='3':
+                delete_orders()
+            elif choice == '4':
+                break
+            else:
+                print("\nThe choice is not valid. Try again.")
+    else:
+        print("\nInvalid Username or Password")
 
 def add_menu_item():
     item = input("Enter Food Item Name: ").strip().title()
@@ -25,26 +36,34 @@ def add_menu_item():
         qty = int(input("Enter the total Available: "))
         price = float(input("Enter Price (₹): "))
         canteen_menu[item] = {'qty': qty, 'price': price}
-        print(f"{item} is updated successfully.")
+        print(f"\n{item} is updated successfully.")
     except ValueError:
-        print("Invalid input. Quantity and price must be numeric.")
+        print("\nInvalid input. Quantity and price must be numeric.")
     input("Press Enter to continue...")
+
+def delete_orders():
+    it = input("Enter the item to delete: ").strip().title()
+    if it in canteen_menu:
+        del canteen_menu[it]
+        print(f"\n{it} has been deleted from the menu.")
+    else:
+        print("\nNo item found with that name....!")
 
 def view_all_orders():
     print("\n--- Today's Orders ---")
     if not orders:
-        print("No orders yet.")
+        print("\nNo orders yet.")
     else:
         orders_list = []
         for student_id, order_list in orders.items():
             for order in order_list:
                 orders_list.append([student_id, order['item'], order['qty']])
         print(tabulate(orders_list, headers=["Student ID", "Item", "Quantity"]))
-    input("Press Enter to continue...")
+    input("\nPress Enter to continue...")
 
 def student_panel():
     print("\n--- Welcome to Student Portal ---")
-    student_id = input("\nEnter Your Student ID: ")
+    student_id = input("\nEnter Your Student ID: ").upper()
 
     val = ["24BAM001","24BAM002","24BAM003","24BAM009"]
 
@@ -53,7 +72,7 @@ def student_panel():
         while True:
             print("\n1. View Menu")
             print("2. Place Pre-Order")
-            print("3. Exit Student Panel")
+            print("3. Exit Student Panel\n")
             choice = input("Enter choice: ")
             if choice == '1':
                 show_menu()
@@ -62,10 +81,10 @@ def student_panel():
             elif choice == '3':
                 break
             else:
-                print("Invalid choice.")
+                print("\nInvalid choice.")
             input("Press Enter to continue...")
     else:
-        print("The given user is not from this college.")
+        print("\nThe given user is not from this college.")
         input("Press Enter to continue...")
 
 def show_menu():
@@ -83,13 +102,13 @@ def place_order(student_id):
 
     item = input("\nEnter the item you want: ").strip().title()
     if item not in canteen_menu:
-        print("Item not available.")
+        print("\nItem not available.")
         return
 
     try:
         qty = int(input("Enter quantity: "))
         if qty <= 0 or qty > canteen_menu[item]['qty']:
-            print("Invalid quantity.")
+            print("\nInvalid quantity.")
             return
 
         total = canteen_menu[item]['price'] * qty
@@ -100,8 +119,8 @@ def place_order(student_id):
             if student_id not in orders:
                 orders[student_id] = []
             orders[student_id].append({'item': item, 'qty': qty})
-            print("Payment successful. Your order has been placed.")
-            print(f"Use this ID for pickup: {student_id}")
+            print("\nPayment successful. Your order has been placed.")
+            print(f"\nUse this ID for pickup: {student_id}")
         else:
             print("\n Order cancelled.")
     except ValueError:
@@ -118,9 +137,9 @@ def main():
         print("\nWho are you?")
         print("\n1. Canteen Owner")
         print("\n2. Student")
-        print("\n3. Exit")
+        print("\n3. Exit\n")
         choice = input("Enter choice: ")
-
+        print()
         if choice == '1':
             admin_panel()
         elif choice == '2':
