@@ -1,77 +1,85 @@
-
 College Canteen Management System
-
 Project Overview
 
-This is a Python-based Canteen Management Application designed for college use. It allows:
+This is a Python + Tkinter based Canteen Management Application designed for college use. It provides a secure and user-friendly system where:
 
-- Admins (Canteen Owners) to manage menu items securely with login, delete items, and view orders.
-- Students to view the menu, place pre-orders, and make payments.
+Admins (Canteen Owners) can manage menu items with authentication, delete items, and view student orders.
 
----
+Students can log in with their credentials, view the menu, place pre-orders with simulated payment, and track their own order history.
 
 Features
+🔑 Admin Panel (with Authentication)
 
-Admin Panel (with Authentication):
-- Login with username and password (admin / admin123).
-- Add menu items with quantity and price.
-- Delete menu items.
-- View all orders placed by students.
+Login with username and password (admin / admin123).
 
-Student Panel:
-- Login using valid Student ID.
-- View the current canteen menu with availability and prices.
-- Place pre-orders with online payment simulation.
+Add menu items with quantity and price.
 
----
+Delete menu items.
+
+View all orders placed by students.
+
+🎓 Student Panel
+
+Secure login with Student ID and Password.
+
+View the current canteen menu with availability and prices.
+
+Place pre-orders with simulated payment option.
+
+View Order History (personal order tracking).
+
+Smooth navigation with exit confirmation (check_exit()) dialogs.
 
 Technologies Used
 
-- Programming Language: Python
-- Library: tabulate (for formatted table output)
-- Concepts: Functions, Dictionaries, Input Validation, Looping, Authentication
+Programming Language: Python
 
----
+Libraries:
+
+tkinter → for GUI dialogs and message boxes
+
+tabulate → for formatted menu display (tables)
+
+Concepts: Functions, Dictionaries, Authentication, GUI Event Handling
 
 How to Run
 
-1. Install required library:
+Install required libraries:
 
 pip install tabulate
 
-2. Run the file:
+
+Run the file:
 
 python College_Canteen_Management_System.py
 
----
-
 Login Details
 
-- Admin Login:
-  - Username: admin
-  - Password: admin123
+Admin Login:
 
-- Student IDs: Must enter a valid ID (e.g. 24BAM001, 24BAM002, etc.)
+Username: admin
 
----
+Password: admin123
+
+Student Login:
+
+Example IDs: 24BAM001, 24BAM002, 24BAM003, 24BAM009
+
+Passwords are predefined in the system (e.g., 123456, kitstudent@009).
 
 Future Enhancements
 
-- Store menu and orders in files or a database for persistent data.
-- Add graphical user interface (GUI) using Tkinter.
-- Send email confirmation of orders to students.
-- Integrate with UPI payment gateway for real-time payment.
+Store menu and orders in files or a database for persistent records.
 
----
+Improve GUI with full Tkinter interface (frames, buttons instead of dialogs).
+
+Send email confirmations of orders to students.
+
+Integrate with UPI/Payment gateway for real-time transactions.
 
 Author
 
 Name: Aswin N
 
----
-
-Note: This project is developed for educational purposes to demonstrate Python Application Development for Institutional Management Systems with basic authentication features.
-
----
-
-End of README.txt
+📌 Note:
+This project is developed for educational purposes to demonstrate Python GUI Application Development with authentication, menu management, and order tracking in an institutional context.
