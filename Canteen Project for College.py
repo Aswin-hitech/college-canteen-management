@@ -1,154 +1,281 @@
+import tkinter as tk
+from tkinter import simpledialog, messagebox
 from tabulate import tabulate
-canteen_menu = {}
-orders = {}
+import time
 
+canteen_menu = {}
+orders = {}  
+
+
+def check_exit(value):
+    if value is None:
+        messagebox.showinfo("Exit", "Thank you for using the app!")
+        exit()
+    return value
+
+
+def show_heading():
+    win = tk.Toplevel()
+    win.title("College Canteen App")
+    win.geometry("600x400")  
+
+    heading = tk.Label(
+        win,
+        text="College Canteen Pre-Order App",
+        font=("Arial", 20, "bold"),
+        fg="darkblue"
+    )
+    heading.pack(pady=20)
+
+    desc = tk.Message(
+        win,
+        text="Welcome to the official College Canteen App.\n\n"
+             "This app allows:\n"
+             "• Canteen Owners to manage menus & orders\n"
+             "• Students to view menus & place pre-orders\n\n"
+             "Note: Only online pre-orders are supported.",
+        font=("Arial", 13),
+        width=550
+    )
+    desc.pack(pady=15)
+
+    tk.Button(
+        win,
+        text="OK",
+        font=("Arial", 12, "bold"),
+        command=lambda: [win.destroy(), main_menu()]
+    ).pack(pady=20)
+
+
+# ---------------- ADMIN PANEL ----------------
 def admin_panel():
-    print("-------Welcome to admin portal------")
-    print()
-    username = input("Enter Your Username: ")
-    username = username.lower()
-    password =input("Enter Your Password: ")
-    if (username=="admin" and password == "admin123"):
-        print("Welcome Admin......!\n")
+    username = check_exit(simpledialog.askstring("Login", "Enter the Username:"))
+    password = check_exit(simpledialog.askstring("Login", "Enter the Password:"))
+
+    if username.lower() == "admin" and password == "123456":
         while True:
-            print("\n1. Add Menu")
-            print("\n2. View Orders")
-            print("\n3. Delete Menu")
-            print("\n4. Exit Owner Panel")
-            choice = input("Enter choice: ")
+            choice = check_exit(simpledialog.askstring(
+                "Admin Panel",
+                "1. Update Menu\n2. View Orders\n3. Exit Owner Panel\n\nEnter choice:"))
 
             if choice == '1':
                 add_menu_item()
             elif choice == '2':
                 view_all_orders()
-            elif choice=='3':
-                delete_orders()
-            elif choice == '4':
+            elif choice == '3':
                 break
             else:
-                print("\nThe choice is not valid. Try again.")
+                messagebox.showwarning("Error", "The choice is not valid.")
     else:
-        print("\nInvalid Username or Password")
+        messagebox.showerror("Error", "Invalid Username or Password")
+
 
 def add_menu_item():
-    item = input("Enter Food Item Name: ").strip().title()
+    show_canteen()
+    item = check_exit(simpledialog.askstring("Add Item", "Enter Food Item Name:")).strip().title()
     try:
-        qty = int(input("Enter the total Available: "))
-        price = float(input("Enter Price (₹): "))
+        qty = int(check_exit(simpledialog.askstring("Add Item", "Enter the total Available:")))
+        price = float(check_exit(simpledialog.askstring("Add Item", "Enter Price (₹):")))
         canteen_menu[item] = {'qty': qty, 'price': price}
-        print(f"\n{item} is updated successfully.")
-    except ValueError:
-        print("\nInvalid input. Quantity and price must be numeric.")
-    input("Press Enter to continue...")
+        messagebox.showinfo("Success", f"{item} updated successfully.")
+    except Exception:
+        messagebox.showerror("Error", "Invalid input. Quantity and price must be numeric.")
 
-def delete_orders():
-    it = input("Enter the item to delete: ").strip().title()
-    if it in canteen_menu:
-        del canteen_menu[it]
-        print(f"\n{it} has been deleted from the menu.")
-    else:
-        print("\nNo item found with that name....!")
 
 def view_all_orders():
-    print("\n--- Today's Orders ---")
     if not orders:
-        print("\nNo orders yet.")
+        messagebox.showinfo("Orders", "No orders yet.")
     else:
         orders_list = []
         for student_id, order_list in orders.items():
             for order in order_list:
                 orders_list.append([student_id, order['item'], order['qty']])
-        print(tabulate(orders_list, headers=["Student ID", "Item", "Quantity"]))
-    input("\nPress Enter to continue...")
+        result = tabulate(orders_list, headers=["Student ID", "Item", "Quantity"])
+        simpledialog.askstring("Orders", f"{result}\n\n(Press OK to continue)")
 
+
+# ---------------- STUDENT PANEL ----------------
 def student_panel():
-    print("\n--- Welcome to Student Portal ---")
-    student_id = input("\nEnter Your Student ID: ").upper()
+    student_id = check_exit(simpledialog.askstring("Login", "Enter Your Student ID:"))
 
-    val = ["24BAM001","24BAM002","24BAM003","24BAM009"]
+    # student_id → password mapping
+    s_val = {
+        "24bam001": "123456",
+        "24bam002": "123456",
+        "24bam003": "123456",
+        "24bam009": "kitstudent@009"
+    }
 
-    if student_id in val:
-        print('\nHello Student... Make your options here please.....')
-        while True:
-            print("\n1. View Menu")
-            print("2. Place Pre-Order")
-            print("3. Exit Student Panel\n")
-            choice = input("Enter choice: ")
-            if choice == '1':
-                show_menu()
-            elif choice == '2':
-                place_order(student_id)
-            elif choice == '3':
-                break
-            else:
-                print("\nInvalid choice.")
-            input("Press Enter to continue...")
+    if student_id and student_id.lower() in s_val:
+        password = check_exit(simpledialog.askstring("Login", "Enter Your Password:"))
+        if password == s_val[student_id.lower()]:
+            messagebox.showinfo("Login Success", f"Welcome Student {student_id.upper()}!")
+
+            while True:
+                choice = simpledialog.askstring(
+                    "Student Panel",
+                    "1. View Menu\n"
+                    "2. Place Order\n"
+                    "3. View Orders\n"
+                    "4. Exit\n\n"
+                    "Enter choice:"
+                )
+
+                if choice == "1":
+                    show_canteen()
+
+                elif choice == "2":
+                    place_order(student_id)
+                    check_exit("Your order has been placed! Do you want to exit?")
+
+                elif choice == "3":
+                    view_orders(student_id)
+
+                elif choice == "4":
+                    check_exit("Do you really want to exit the Student Panel?")
+                    break
+
+                else:
+                    messagebox.showerror("Error", "Invalid Choice")
+
+        else:
+            messagebox.showerror("Login Failed", "Incorrect Password!")
     else:
-        print("\nThe given user is not from this college.")
-        input("Press Enter to continue...")
+        messagebox.showerror("Login Failed", "Invalid Student ID!")
+
+def view_orders(student_id):
+    win = tk.Toplevel()
+    win.title(f"Order History - {student_id.upper()}")
+    win.geometry("400x300")
+
+    text = tk.Text(win, font=("Arial", 12))
+    text.pack(expand=True, fill="both", padx=10, pady=10)
+
+    if student_id not in orders or not orders[student_id]:
+        text.insert("1.0", "No orders found yet.")
+    else:
+        order_text = "Item\tQty\tPrice\n"
+        order_text += "-" * 30 + "\n"
+        total = 0
+        for order in orders[student_id]:
+            price = order["qty"] * order["price"]
+            total += price
+            order_text += f"{order['item']}\t{order['qty']}\t₹{price}\n"
+        order_text += "\n---------------------------\n"
+        order_text += f"Total: ₹{total}"
+        text.insert("1.0", order_text)
+
+    text.config(state="disabled")  # make it read-only
+
 
 def show_menu():
-    print("\n--- Today's Menu ---")
+    win = tk.Toplevel()
+    win.title("Today's Menu")
+    win.geometry("400x300")
+
+    text = tk.Text(win, font=("Arial", 12))
+    text.pack(expand=True, fill="both", padx=10, pady=10)
+
     if not canteen_menu:
-        print("\n---- No items updated ---")
+        text.insert("1.0", "No items added yet.")
     else:
-        menu_table = [[item, d['qty'], f"₹{d['price']}"] for item, d in canteen_menu.items()]
-        print(tabulate(menu_table, headers=["Item", "Available Qty", "Price"]))
+        menu_text = "Item\tAvailable Qty\tPrice\n"
+        menu_text += "-" * 35 + "\n"
+        for item, d in canteen_menu.items():
+            menu_text += f"{item}\t{d['qty']}\t\t₹{d['price']}\n"
+        text.insert("1.0", menu_text)
+
+    text.config(state="disabled")
+
+
+def show_canteen():
+    win = tk.Toplevel()
+    win.title("Canteen Menu")
+    win.geometry("400x300")
+
+    text = tk.Text(win, font=("Arial", 12))
+    text.pack(expand=True, fill="both", padx=10, pady=10)
+
+    if not canteen_menu:
+        text.insert("1.0", "No items added yet.")
+    else:
+        menu_text = "Item\tAvailable Qty\tPrice\n"
+        menu_text += "-" * 35 + "\n"
+        for item, d in canteen_menu.items():
+            menu_text += f"{item}\t{d['qty']}\t\t₹{d['price']}\n"
+        text.insert("1.0", menu_text)
+
+    text.config(state="disabled")
+
 
 def place_order(student_id):
-    show_menu()
     if not canteen_menu:
+        messagebox.showwarning("Order", "No items available.")
         return
 
-    item = input("\nEnter the item you want: ").strip().title()
+    show_menu()
+    item = check_exit(simpledialog.askstring("Order", "Enter the item you want:")).strip().title()
+
     if item not in canteen_menu:
-        print("\nItem not available.")
+        messagebox.showerror("Error", "Item not available.")
+        time.sleep(1)
         return
 
     try:
-        qty = int(input("Enter quantity: "))
+        qty = int(check_exit(simpledialog.askstring("Order", "Enter quantity:")))
         if qty <= 0 or qty > canteen_menu[item]['qty']:
-            print("\nInvalid quantity.")
+            messagebox.showerror("Error", "Invalid quantity.")
             return
 
         total = canteen_menu[item]['price'] * qty
-        print(f"\nTotal Amount: ₹{total:.2f}")
-        pay = input("Proceed to pay? (Yes/No): ").lower()
-        if pay in ['yes', 'y']:
+        confirm = messagebox.askyesno("Payment", f"Total Amount: ₹{total:.2f}\nProceed to pay?")
+        if confirm:
             canteen_menu[item]['qty'] -= qty
             if student_id not in orders:
                 orders[student_id] = []
-            orders[student_id].append({'item': item, 'qty': qty})
-            print("\nPayment successful. Your order has been placed.")
-            print(f"\nUse this ID for pickup: {student_id}")
+            # Save item + qty + price for history
+            orders[student_id].append({
+                'item': item,
+                'qty': qty,
+                'price': canteen_menu[item]['price']
+            })
+            messagebox.showinfo("Success", f"Order placed.\nPickup ID: {student_id}")
+
+            time.sleep(1)
         else:
-            print("\n Order cancelled.")
-    except ValueError:
-        print("\n Invalid input. Quantity must be a number.")
+            messagebox.showinfo("Cancelled", "Order cancelled.")
+            time.sleep(1)
+    except Exception:
+        messagebox.showerror("Error", "Invalid input. Quantity must be a number.")
+        time.sleep(1)
 
-def main():
-    print("  College Canteen Pre-Order App")
-    print()
-    print("=================================")
-    print("Note this app only works for pre-orders and supports only online payments")
-    print()
 
+# ---------------- MAIN MENU ----------------
+def main_menu():
     while True:
-        print("\nWho are you?")
-        print("\n1. Canteen Owner")
-        print("\n2. Student")
-        print("\n3. Exit\n")
-        choice = input("Enter choice: ")
-        print()
+        choice = check_exit(simpledialog.askstring(
+            "Main Menu",
+            "Who are you?\n\n1. Canteen Owner\n2. Student\n3. Exit\n\nEnter choice:"
+        ))
+
         if choice == '1':
             admin_panel()
         elif choice == '2':
             student_panel()
         elif choice == '3':
-            print("Thank you!")
+            messagebox.showinfo("Exit", "Thank you for using the app!")
             break
         else:
-            print("Invalid choice.")
+            messagebox.showwarning("Error", "Invalid choice.")
+
+
+# ---------------- MAIN APP ----------------
+def main():
+    root = tk.Tk()
+    root.withdraw()
+    show_heading()
+    root.mainloop()
+
 
 if __name__ == "__main__":
     main()
