@@ -1,4 +1,5 @@
-College Canteen Management System
+College Canteen Management System vr2.0
+
 Project Overview
 
 This is a Python + Tkinter based Canteen Management Application designed for college use. It provides a secure and user-friendly system where admins (Canteen Owners) can manage menu items with authentication, delete items, and view student orders, while students can log in with their credentials, view the menu, place pre-orders with simulated payment, and track their own order history.
